@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lajur</title>
+</head>
+<body>
+  <header>
+    <form id="add-form">
+      <input id="add-input" placeholder="Tempel URL atau video ID YouTube (boleh banyak, pisah spasi/koma)" autocomplete="off">
+      <button id="add-btn" type="submit">Tambah</button>
+    </form>
+    <span id="counter">0/4</span>
+    <button id="clear-btn" class="secondary" type="button">Kosongkan</button>
+  </header>
+  <div id="message" role="status"></div>
+
+  <main>
+    <div id="grid-wrap">
+      <p id="empty">Belum ada video. Tempel URL live YouTube di atas.</p>
+      <section id="grid" data-count="0"></section>
+    </div>
+    <aside>
+      <div class="title" id="chat-title">Pilih satu tile lalu klik "Fokus" untuk membuka chat.</div>
+      <iframe id="chat" title="Live chat" allow="clipboard-write"></iframe>
+    </aside>
+  </main>
+
+  <footer>Tidak berafiliasi dengan YouTube. Semua video dan chat dimuat lewat embed resmi YouTube.</footer>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

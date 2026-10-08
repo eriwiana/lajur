@@ -1,0 +1,21 @@
+name: ci
+on: pull_request
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx biome ci # format + import order + lint, whole repo
+      - run: npm run typecheck # compilation
+      - run: npm test
+      - run: npm run build
+      # No coverage gate yet: the only tests cover the pure modules and main.ts is DOM-only.
+      # Add one when logic moves out of main.ts into testable modules.
