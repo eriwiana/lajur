@@ -58,7 +58,10 @@ test('URL builder: parameter di-encode', () => {
   assert.ok(p.startsWith(`https://www.youtube.com/embed/${ID}?`));
   assert.ok(p.includes('mute=1'));
   assert.ok(p.includes('origin=http%3A%2F%2Flocalhost%3A5173'));
-  assert.equal(chatUrl(ID, 'localhost'), `https://www.youtube.com/live_chat?v=${ID}&embed_domain=localhost`);
+  assert.equal(
+    chatUrl(ID, 'localhost'),
+    `https://www.youtube.com/live_chat?v=${ID}&embed_domain=localhost&dark_theme=1`,
+  );
 });
 
 test('state: round-trip lewat hash', () => {

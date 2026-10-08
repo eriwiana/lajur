@@ -59,7 +59,7 @@ export function playerUrl(id: string, origin: string): string {
 }
 
 export function chatUrl(id: string, hostname: string): string {
-  const p = new URLSearchParams({ v: id, embed_domain: hostname });
+  const p = new URLSearchParams({ v: id, embed_domain: hostname, dark_theme: '1' });
   return `https://www.youtube.com/live_chat?${p}`;
 }
 
