@@ -1,4 +1,4 @@
-import { parseVideoId } from './youtube.ts';
+import { parseMany, parseVideoId } from './youtube.ts';
 
 export const MAX_TILES = 4;
 
@@ -18,12 +18,7 @@ export function encodeState(s: State): string {
 
 export function decodeState(hash: string): State {
   const p = new URLSearchParams(hash.replace(/^#/, ''));
-  const ids: string[] = [];
-  for (const raw of (p.get('v') ?? '').split(',')) {
-    const id = parseVideoId(raw);
-    if (id && !ids.includes(id)) ids.push(id);
-    if (ids.length >= MAX_TILES) break;
-  }
+  const ids = parseMany(p.get('v') ?? '').ids.slice(0, MAX_TILES);
   const f = parseVideoId(p.get('f') ?? '');
   return { ids, focus: f && ids.includes(f) ? f : null };
 }
