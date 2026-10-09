@@ -150,6 +150,8 @@ function clearAll(): void {
 function loadFromHash(): void {
   const s = decodeState(location.hash);
   clearAll();
+  // Set dulu supaya addTiles tidak auto-fokus tile pertama (chat dimuat dua kali).
+  focusId = s.focus;
   addTiles(s.ids);
   if (s.focus) setFocus(s.focus);
 }
