@@ -3,11 +3,12 @@
 
 const ID_RE = /^[A-Za-z0-9_-]{11}$/;
 const PATH_ID_RE = /^\/(?:live|embed|shorts|v)\/([A-Za-z0-9_-]{11})(?:[/?#]|$)/;
+const SHORT_ID_RE = /^\/([A-Za-z0-9_-]{11})(?:\/|$)/;
 const YT_HOSTS = new Set(['youtube.com', 'www.youtube.com', 'm.youtube.com', 'music.youtube.com']);
 
 /** Ambil video ID dari ID mentah atau URL YouTube. Mengembalikan null kalau tidak valid. */
 export function parseVideoId(input: string): string | null {
-  const s = (input ?? '').trim();
+  const s = input.trim();
   if (!s) return null;
   if (ID_RE.test(s)) return s;
 
@@ -20,8 +21,7 @@ export function parseVideoId(input: string): string | null {
 
   const host = url.hostname.toLowerCase();
   if (host === 'youtu.be') {
-    const id = url.pathname.slice(1, 12);
-    return ID_RE.test(id) ? id : null;
+    return url.pathname.match(SHORT_ID_RE)?.[1] ?? null;
   }
   if (!YT_HOSTS.has(host)) return null;
 

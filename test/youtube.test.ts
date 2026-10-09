@@ -43,6 +43,7 @@ test('parseVideoId: input tidak valid', () => {
     'https://www.youtube.com/@channel',
     'https://www.youtube.com/watch?v=pendek',
     'https://www.youtube.com/live/pendek',
+    'https://youtu.be/dQw4w9WgXcQterlalupanjang',
   ];
   for (const b of bad) assert.equal(parseVideoId(b), null, JSON.stringify(b));
 });
