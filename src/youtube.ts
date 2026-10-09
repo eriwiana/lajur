@@ -8,7 +8,7 @@ const YT_HOSTS = new Set(['youtube.com', 'www.youtube.com', 'm.youtube.com', 'mu
 
 /** Ambil video ID dari ID mentah atau URL YouTube. Mengembalikan null kalau tidak valid. */
 export function parseVideoId(input: string): string | null {
-  const s = (input ?? '').trim();
+  const s = input.trim();
   if (!s) return null;
   if (ID_RE.test(s)) return s;
 

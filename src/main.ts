@@ -175,10 +175,7 @@ clearBtn.addEventListener('click', () => {
   clearAll();
 });
 
-window.addEventListener('hashchange', () => {
-  // Abaikan hashchange yang kita picu sendiri lewat replaceState (tidak memicu event ini).
-  loadFromHash();
-});
+window.addEventListener('hashchange', loadFromHash);
 
 layout();
 loadFromHash();
