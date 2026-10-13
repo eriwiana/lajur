@@ -2,7 +2,7 @@
 
 Tonton beberapa live YouTube sekaligus (maksimal 4) di satu halaman. Live chat hanya dimuat untuk tile yang sedang difokuskan, dan ikut pindah saat fokus pindah. Login memakai akun YouTube kamu sendiri lewat embed resmi.
 
-> Status: MVP awal, hanya diuji di desktop (Chromium dan Safari). Firefox belum diuji.
+> Status: v0.1, hanya diuji di desktop (Chromium dan Safari). Firefox belum diuji.
 
 ## Menjalankan
 
@@ -50,4 +50,8 @@ Proyek ini tidak berafiliasi dengan, dan tidak didukung oleh, YouTube atau Googl
 
 ## Lisensi
 
-[MIT](LICENSE). Ganti `<NAMA PEMEGANG HAK CIPTA>` di `LICENSE` dengan namamu sebelum dipublikasikan.
+[MIT](LICENSE).
+
+## Kontribusi
+
+PR dan issue dipersilakan. Jalankan `npm run lint`, `npm run typecheck`, dan `npm test` sebelum push. Hook git terpasang otomatis lewat `npm install`. Semua perubahan lewat pull request.
