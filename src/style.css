@@ -42,6 +42,14 @@ header form {
   min-width: 0;
 }
 
+select {
+  padding: 5px 8px;
+  background: var(--panel);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
 input {
   flex: 1;
   min-width: 0;
@@ -146,6 +154,29 @@ main {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Preset hanya mengubah penempatan grid. Urutan DOM tetap: memindah iframe me-reload player. */
+#grid[data-layout="row"] {
+  grid-template-columns: none;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+}
+#grid[data-layout="col"] {
+  grid-template-columns: 1fr;
+}
+#grid[data-layout="focus"] {
+  grid-template-columns: 3fr 1fr;
+}
+#grid[data-layout="focus"][data-count="1"] {
+  grid-template-columns: 1fr;
+}
+#grid[data-layout="focus"] .tile {
+  grid-column: 2;
+}
+#grid[data-layout="focus"] .tile.active {
+  grid-column: 1;
+  grid-row: 1 / span 3;
 }
 
 aside {

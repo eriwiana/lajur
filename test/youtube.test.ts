@@ -66,16 +66,16 @@ test('URL builder: parameter di-encode', () => {
 });
 
 test('state: round-trip lewat hash', () => {
-  const s = { ids: [ID, ID2], focus: ID2 };
+  const s = { ids: [ID, ID2], focus: ID2, layout: 'grid' as const };
   const h = encodeState(s);
   assert.equal(h, `#v=${ID},${ID2}&f=${ID2}`);
   assert.deepEqual(decodeState(h), s);
 });
 
 test('state: hash kosong dan rusak', () => {
-  assert.deepEqual(decodeState(''), { ids: [], focus: null });
-  assert.equal(encodeState({ ids: [], focus: null }), '');
-  assert.deepEqual(decodeState('#v=bukan-id,,%%%'), { ids: [], focus: null });
+  assert.deepEqual(decodeState(''), { ids: [], focus: null, layout: 'grid' });
+  assert.equal(encodeState({ ids: [], focus: null, layout: 'grid' }), '');
+  assert.deepEqual(decodeState('#v=bukan-id,,%%%'), { ids: [], focus: null, layout: 'grid' });
 });
 
 test('state: batas tile, dedupe, fokus harus ada di daftar', () => {
@@ -85,4 +85,20 @@ test('state: batas tile, dedupe, fokus harus ada di daftar', () => {
   assert.equal(s.focus, null); // ID5 terpotong oleh batas
   assert.deepEqual(decodeState(`#v=${ID},${ID}`).ids, [ID]);
   assert.equal(decodeState(`#v=${ID}&f=${ID2}`).focus, null);
+});
+
+test('state: layout non-default ikut di hash dan kembali utuh', () => {
+  const s = { ids: [ID, ID2], focus: ID, layout: 'focus' as const };
+  const h = encodeState(s);
+  assert.equal(h, `#v=${ID},${ID2}&f=${ID}&l=focus`);
+  assert.deepEqual(decodeState(h), s);
+});
+
+test('state: layout default tidak ditulis ke hash', () => {
+  assert.ok(!encodeState({ ids: [ID], focus: null, layout: 'grid' }).includes('l='));
+});
+
+test('state: layout tidak dikenal jatuh ke grid', () => {
+  assert.equal(decodeState(`#v=${ID}&l=diagonal`).layout, 'grid');
+  assert.equal(decodeState(`#v=${ID}&l=`).layout, 'grid');
 });

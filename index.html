@@ -11,6 +11,14 @@
       <input id="add-input" placeholder="Tempel URL atau video ID YouTube (boleh banyak, pisah spasi/koma)" autocomplete="off">
       <button id="add-btn" type="submit">Tambah</button>
     </form>
+    <label>Layout
+      <select id="layout">
+        <option value="grid">Grid</option>
+        <option value="focus">Fokus + strip</option>
+        <option value="row">Baris</option>
+        <option value="col">Kolom</option>
+      </select>
+    </label>
     <span id="counter">0/4</span>
     <button id="clear-btn" class="secondary" type="button">Kosongkan</button>
   </header>
@@ -19,7 +27,7 @@
   <main>
     <div id="grid-wrap">
       <p id="empty">Belum ada video. Tempel URL live YouTube di atas.</p>
-      <section id="grid" data-count="0"></section>
+      <section id="grid" data-count="0" data-layout="grid"></section>
     </div>
     <aside>
       <div class="title" id="chat-title">Pilih satu tile lalu klik "Fokus" untuk membuka chat.</div>
