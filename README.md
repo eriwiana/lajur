@@ -38,6 +38,7 @@ Perubahan perilaku embed YouTube sebaiknya hanya menyentuh `src/youtube.ts`.
 - Tidak semua video boleh di-embed, dan chat bisa dimatikan atau khusus member.
 - Autoplay hanya jalan dalam keadaan muted. Setelah membuka link yang sudah berisi fokus, audio baru menyala setelah kamu klik **Fokus**.
 - Kontrol audio memakai `postMessage` ke iframe player. Cara ini bisa berhenti bekerja kalau YouTube mengubah perilakunya.
+- Chat memakai akun Google yang aktif di youtube.com pada browsermu, dan butuh third-party cookie untuk youtube.com. Kalau tombol "Sign in to chat" memilih akun yang salah, ganti akun default di Google, pakai profil browser terpisah, atau izinkan cookie pihak ketiga untuk situs ini. Halaman ini tidak bisa memilih akun.
 - Tampilan chat (warna latar/teks) dikendalikan YouTube dan bisa berbeda antar browser.
 - Di produksi, chat dan player hanya bekerja pada domain yang sesuai dengan `embed_domain`/`origin`. Uji ulang setelah deploy.
 

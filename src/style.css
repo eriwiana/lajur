@@ -117,6 +117,23 @@ main {
   color: var(--muted);
 }
 
+aside {
+  width: 360px;
+  flex: none;
+  border-left: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+}
+aside .title {
+  padding: 8px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+}
+aside iframe {
+  flex: 1;
+  background: #000;
+}
+
 .tile {
   background: var(--panel);
   border: 2px solid var(--line);
@@ -151,22 +168,8 @@ main {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
-aside {
-  width: 360px;
-  flex: none;
-  border-left: 1px solid var(--line);
-  display: flex;
-  flex-direction: column;
-}
-aside .title {
-  padding: 8px;
-  color: var(--muted);
-  border-bottom: 1px solid var(--line);
-}
-aside iframe {
-  flex: 1;
-  background: #000;
+.tile.error .bar span {
+  color: #ffb4a8;
 }
 
 footer {

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { decodeState, encodeState, MAX_TILES } from '../src/state.ts';
-import { chatUrl, parseMany, parseVideoId, playerUrl } from '../src/youtube.ts';
+import { chatUrl, errorMessage, parseMany, parseVideoId, playerUrl } from '../src/youtube.ts';
 
 const ID = 'dQw4w9WgXcQ';
 const ID2 = 'jNQXAC9IVRw';
@@ -85,4 +85,13 @@ test('state: batas tile, dedupe, fokus harus ada di daftar', () => {
   assert.equal(s.focus, null); // ID5 terpotong oleh batas
   assert.deepEqual(decodeState(`#v=${ID},${ID}`).ids, [ID]);
   assert.equal(decodeState(`#v=${ID}&f=${ID2}`).focus, null);
+});
+
+test('errorMessage: 101 dan 150 sama-sama berarti embed dilarang', () => {
+  assert.equal(errorMessage(101), errorMessage(150));
+  assert.match(errorMessage(101), /embed/);
+});
+
+test('errorMessage: kode tidak dikenal jatuh ke pesan umum', () => {
+  assert.equal(errorMessage(999), 'Player gagal memuat');
 });
