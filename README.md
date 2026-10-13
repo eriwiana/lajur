@@ -1,57 +1,55 @@
 # Lajur
 
-Tonton beberapa live YouTube sekaligus (maksimal 4) di satu halaman. Live chat hanya dimuat untuk tile yang sedang difokuskan, dan ikut pindah saat fokus pindah. Login memakai akun YouTube kamu sendiri lewat embed resmi.
+Watch up to four YouTube live streams on one page. Live chat follows the stream you focus on. You sign in with your own YouTube account through YouTube's official embeds.
 
-> Status: v0.1, hanya diuji di desktop (Chromium dan Safari). Firefox belum diuji.
+> Status: v0.1. Tested on desktop Chromium and Safari only. Firefox is untested.
 
-## Menjalankan
+## Run it
 
 ```bash
 npm install
 npm run dev        # http://localhost:5173
-npm test           # unit test parser URL dan state
-npm run build      # output di dist/
+npm test           # unit tests
+npm run build      # output in dist/
 ```
 
-Wajib dibuka lewat `http://localhost`, bukan `file://`. Chat embed membutuhkan hostname (`embed_domain`).
+Open it through `http://localhost`, not `file://`. YouTube's chat embed needs a real hostname.
 
-## Cara pakai
+## How to use
 
-1. Tempel satu atau beberapa URL/ID YouTube (pisah spasi atau koma), klik **Tambah**.
-2. Klik **Fokus** pada sebuah tile: audio tile itu menyala, yang lain di-mute, dan chat pindah ke tile itu.
-3. Daftar video dan fokus tersimpan di URL hash (`#v=ID1,ID2&f=ID1`), jadi bisa di-share atau di-refresh.
+1. Paste one or more YouTube links or video IDs and click **Tambah** (Add).
+2. Click **Fokus** (Focus) on a tile. That tile gets sound and the big slot, the others are muted and stacked on the right, and chat switches to it.
+3. Your videos and focus are saved in the page URL, so you can share or refresh it.
 
-Format yang dikenali: `watch?v=`, `youtu.be/`, `/live/`, `/embed/`, `/shorts/`, dan ID 11 karakter.
+Recognised links: `watch?v=`, `youtu.be/`, `/live/`, `/embed/`, `/shorts/`, and bare video IDs.
 
-## Struktur
+## Project layout
 
-| File | Isi |
+| File | Purpose |
 | --- | --- |
-| `src/youtube.ts` | Semua yang bergantung pada YouTube: parser URL, URL embed/chat, kontrol audio |
-| `src/state.ts` | Serialisasi state ke URL hash, batas jumlah tile |
-| `src/main.ts` | UI dan DOM |
+| `src/youtube.ts` | Everything that depends on YouTube: links, embeds, audio control |
+| `src/state.ts` | Saving and restoring the page state |
+| `src/main.ts` | The interface |
 
-Perubahan perilaku embed YouTube sebaiknya hanya menyentuh `src/youtube.ts`.
+## Known limits
 
-## Batasan yang diketahui
+- Some videos cannot be embedded, and chat can be off or members-only. A tile shows the reason when YouTube reports one.
+- Videos start muted because browsers block autoplay with sound. After opening a shared link, click **Fokus** once to hear audio.
+- Audio control relies on YouTube behaviour that is not formally documented. It may stop working if YouTube changes it.
+- Chat uses the Google account that is active on youtube.com in your browser, and needs third-party cookies for youtube.com. If "Sign in to chat" picks the wrong account, change your default Google account, use a separate browser profile, or allow third-party cookies for this site. The page cannot choose the account for you.
+- Chat colours are controlled by YouTube and can differ between browsers.
+- On a deployed site, video and chat only work on the domain they were loaded from. Test after each deploy.
 
-- Tidak semua video boleh di-embed, dan chat bisa dimatikan atau khusus member.
-- Autoplay hanya jalan dalam keadaan muted. Setelah membuka link yang sudah berisi fokus, audio baru menyala setelah kamu klik **Fokus**.
-- Kontrol audio memakai `postMessage` ke iframe player. Cara ini bisa berhenti bekerja kalau YouTube mengubah perilakunya.
-- Chat memakai akun Google yang aktif di youtube.com pada browsermu, dan butuh third-party cookie untuk youtube.com. Kalau tombol "Sign in to chat" memilih akun yang salah, ganti akun default di Google, pakai profil browser terpisah, atau izinkan cookie pihak ketiga untuk situs ini. Halaman ini tidak bisa memilih akun.
-- Tampilan chat (warna latar/teks) dikendalikan YouTube dan bisa berbeda antar browser.
-- Di produksi, chat dan player hanya bekerja pada domain yang sesuai dengan `embed_domain`/`origin`. Uji ulang setelah deploy.
+## Compliance
 
-## Kepatuhan
+Lajur only shows YouTube's official embeds. Please do not add proxies, downloads, or ad blocking. Anyone who deploys it is responsible for following the [YouTube Terms of Service](https://www.youtube.com/t/terms) and current API and embed policies.
 
-Proyek ini hanya menampilkan embed resmi YouTube. Jangan menambahkan proxy, pengunduhan, atau pemblokiran iklan. Siapa pun yang men-deploy bertanggung jawab atas kepatuhan pada [YouTube Terms of Service](https://www.youtube.com/t/terms) dan kebijakan API/embed terbaru.
+Lajur is not affiliated with or endorsed by YouTube or Google.
 
-Proyek ini tidak berafiliasi dengan, dan tidak didukung oleh, YouTube atau Google.
+## Contributing
 
-## Lisensi
+Issues and pull requests are welcome. Run `npm run lint`, `npm run typecheck`, and `npm test` before pushing. Git hooks are installed automatically by `npm install`. All changes go through pull requests.
 
-[MIT](LICENSE).
+## License
 
-## Kontribusi
-
-PR dan issue dipersilakan. Jalankan `npm run lint`, `npm run typecheck`, dan `npm test` sebelum push. Hook git terpasang otomatis lewat `npm install`. Semua perubahan lewat pull request.
+[MIT](LICENSE)

@@ -104,9 +104,20 @@ main {
   display: grid;
   gap: 6px;
   padding: 6px;
+  height: 100%;
   /* Tile aktif besar di kolom 1, sisanya ditumpuk di kolom 2. Urutan DOM tetap: memindah iframe me-reload player. */
   grid-template-columns: 3fr 1fr;
-  align-content: start;
+  /* Satu baris per tile strip, tinggi dibagi rata: semua tile mengisi layar. */
+  grid-template-rows: minmax(0, 1fr);
+}
+#grid[data-count="3"] {
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+#grid[data-count="4"] {
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+}
+#grid[data-count="0"] {
+  display: none;
 }
 #grid[data-count="1"] {
   grid-template-columns: 1fr;
@@ -141,25 +152,34 @@ aside iframe {
   overflow: hidden;
   min-width: 0;
   grid-column: 2;
+  display: flex;
+  flex-direction: column;
 }
 .tile.active {
   border-color: var(--accent);
   grid-column: 1;
-  grid-row: 1 / span 3;
+  grid-row: 1 / -1;
 }
 .tile .frame {
-  aspect-ratio: 16 / 9;
+  position: relative;
+  flex: 1;
+  min-height: 0;
   background: #000;
 }
 .tile iframe {
+  position: absolute;
+  inset: 0;
   height: 100%;
-  display: block;
 }
 .tile .bar {
   display: flex;
   align-items: center;
-  padding: 6px 8px;
-  gap: 8px;
+  padding: 3px 6px;
+  gap: 6px;
+}
+.tile .bar button {
+  padding: 2px 8px;
+  font-size: 12px;
 }
 .tile .bar span {
   flex: 1;

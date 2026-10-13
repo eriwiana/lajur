@@ -58,6 +58,19 @@ export function playerUrl(id: string, origin: string): string {
   return `https://www.youtube.com/embed/${id}?${p}`;
 }
 
+/** Judul video lewat oEmbed publik YouTube. Null kalau gagal, pemanggil jatuh ke ID. */
+export async function fetchTitle(id: string): Promise<string | null> {
+  const p = new URLSearchParams({ url: `https://www.youtube.com/watch?v=${id}`, format: 'json' });
+  try {
+    const res = await fetch(`https://www.youtube.com/oembed?${p}`);
+    if (!res.ok) return null;
+    const { title } = await res.json();
+    return typeof title === 'string' && title ? title : null;
+  } catch {
+    return null;
+  }
+}
+
 export function chatUrl(id: string, hostname: string): string {
   const p = new URLSearchParams({ v: id, embed_domain: hostname, dark_theme: '1' });
   return `https://www.youtube.com/live_chat?${p}`;

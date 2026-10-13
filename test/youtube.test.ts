@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { decodeState, encodeState, MAX_TILES } from '../src/state.ts';
-import { chatUrl, errorMessage, parseMany, parseVideoId, playerUrl } from '../src/youtube.ts';
+import { chatUrl, errorMessage, fetchTitle, parseMany, parseVideoId, playerUrl } from '../src/youtube.ts';
 
 const ID = 'dQw4w9WgXcQ';
 const ID2 = 'jNQXAC9IVRw';
@@ -94,4 +94,18 @@ test('errorMessage: 101 dan 150 sama-sama berarti embed dilarang', () => {
 
 test('errorMessage: kode tidak dikenal jatuh ke pesan umum', () => {
   assert.equal(errorMessage(999), 'Player gagal memuat');
+});
+
+test('fetchTitle: ambil judul dari oEmbed', async (t) => {
+  t.mock.method(globalThis, 'fetch', async () => Response.json({ title: 'Judul Live' }));
+  assert.equal(await fetchTitle(ID), 'Judul Live');
+});
+
+test('fetchTitle: null kalau respons gagal atau jaringan putus', async (t) => {
+  const f = t.mock.method(globalThis, 'fetch', async () => new Response('', { status: 404 }));
+  assert.equal(await fetchTitle(ID), null);
+  f.mock.mockImplementation(async () => {
+    throw new TypeError('network');
+  });
+  assert.equal(await fetchTitle(ID), null);
 });
