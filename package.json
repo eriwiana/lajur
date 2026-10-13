@@ -1,7 +1,7 @@
 {
   "name": "lajur",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Tonton beberapa live YouTube sekaligus dengan chat yang ikut pindah.",
   "license": "MIT",
   "type": "module",
