@@ -19,3 +19,15 @@ jobs:
       - run: npm run build
       # No coverage gate yet: the only tests cover the pure modules and main.ts is DOM-only.
       # Add one when logic moves out of main.ts into testable modules.
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build --target test . # same checks, inside the image's own build
+      - run: docker build -t lajur .
+      - name: Smoke test
+        run: |
+          docker run -d --name lajur -p 8080:8080 lajur
+          sleep 2
+          curl -fsS http://localhost:8080/ | grep -q "<title>Lajur</title>"
+      # No layer cache: the build is ~30s. Add docker/build-push-action with cache if that grows.
