@@ -85,14 +85,35 @@ export function listen(iframe: HTMLIFrameElement): void {
   iframe.contentWindow?.postMessage(JSON.stringify({ event: 'listening', id: 1, channel: 'widget' }), '*');
 }
 
-export function onPlayerReady(cb: (source: MessageEventSource) => void): void {
+function onPlayerMessage(
+  cb: (source: MessageEventSource, msg: { event?: string; info?: unknown }) => void,
+): void {
   window.addEventListener('message', (e) => {
     if (e.origin !== 'https://www.youtube.com' || !e.source || typeof e.data !== 'string') return;
     try {
-      const { event } = JSON.parse(e.data);
-      if (event === 'onReady' || event === 'initialDelivery') cb(e.source);
+      cb(e.source, JSON.parse(e.data));
     } catch {
       /* bukan pesan JSON */
     }
   });
+}
+
+export function onPlayerReady(cb: (source: MessageEventSource) => void): void {
+  onPlayerMessage((source, { event }) => {
+    if (event === 'onReady' || event === 'initialDelivery') cb(source);
+  });
+}
+
+export function onPlayerError(cb: (source: MessageEventSource, code: number) => void): void {
+  onPlayerMessage((source, { event, info }) => {
+    if (event === 'onError' && typeof info === 'number') cb(source, info);
+  });
+}
+
+/** Kode error IFrame API: 2 ID tidak valid, 5 gagal memuat, 100 tidak ada/privat, 101/150 embed dilarang. */
+export function errorMessage(code: number): string {
+  if (code === 101 || code === 150) return 'Pemilik video melarang embed';
+  if (code === 100) return 'Video tidak ditemukan atau privat';
+  if (code === 2) return 'ID video tidak valid';
+  return 'Player gagal memuat';
 }

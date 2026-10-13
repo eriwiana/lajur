@@ -168,6 +168,9 @@ aside iframe {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.tile.error .bar span {
+  color: #ffb4a8;
+}
 
 footer {
   padding: 8px 12px;

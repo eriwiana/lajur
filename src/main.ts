@@ -1,6 +1,15 @@
 import './style.css';
 import { decodeState, encodeState, MAX_TILES, type State } from './state.ts';
-import { chatUrl, listen, onPlayerReady, parseMany, playerUrl, setAudio } from './youtube.ts';
+import {
+  chatUrl,
+  errorMessage,
+  listen,
+  onPlayerError,
+  onPlayerReady,
+  parseMany,
+  playerUrl,
+  setAudio,
+} from './youtube.ts';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -19,6 +28,7 @@ interface Tile {
   id: string;
   el: HTMLElement;
   iframe: HTMLIFrameElement;
+  label: HTMLElement;
   focusBtn: HTMLButtonElement;
 }
 
@@ -77,7 +87,7 @@ function createTile(id: string): Tile {
   bar.append(label, focusBtn, removeBtn);
   el.append(frame, bar);
 
-  const tile: Tile = { id, el, iframe, focusBtn };
+  const tile: Tile = { id, el, iframe, label, focusBtn };
   // Player baru mulai muted (mute=1). `load` iframe terlalu dini untuk perintah audio:
   // daftar ke player, terapkan audio saat ia lapor siap (lihat onPlayerReady di bawah).
   iframe.addEventListener('load', () => listen(iframe));
@@ -90,6 +100,14 @@ function createTile(id: string): Tile {
 
 onPlayerReady((source) => {
   for (const t of tiles.values()) if (t.iframe.contentWindow === source) applyAudio(t);
+});
+
+onPlayerError((source, code) => {
+  for (const t of tiles.values()) {
+    if (t.iframe.contentWindow !== source) continue;
+    t.el.classList.add('error');
+    t.label.textContent = `${t.id} · ${errorMessage(code)}`;
+  }
 });
 
 function setFocus(id: string | null): void {
