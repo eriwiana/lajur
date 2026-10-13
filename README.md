@@ -6,14 +6,22 @@ Watch up to four YouTube live streams on one page. Live chat follows the stream 
 
 ## Run it
 
+Lajur ships as a tiny container (under 3 MB, runs as a non-root user).
+
 ```bash
-npm install
-npm run dev        # http://localhost:5173
-npm test           # unit tests
-npm run build      # output in dist/
+docker build -t lajur .
+docker run --rm -p 8080:8080 lajur     # then open http://localhost:8080
 ```
 
-Open it through `http://localhost`, not `file://`. YouTube's chat embed needs a real hostname.
+To check the code, build the `test` target. It runs the style check, type check and unit tests, and fails if any of them break:
+
+```bash
+docker build --target test .
+```
+
+Open it through `localhost` or your own domain, not `file://`. YouTube's chat embed needs a real hostname.
+
+For live-reload development, use Node 22 and `npm run dev` instead.
 
 ## How to use
 
@@ -48,7 +56,7 @@ Lajur is not affiliated with or endorsed by YouTube or Google.
 
 ## Contributing
 
-Issues and pull requests are welcome. Run `npm run lint`, `npm run typecheck`, and `npm test` before pushing. Git hooks are installed automatically by `npm install`. All changes go through pull requests.
+Issues and pull requests are welcome. Run the `test` target (or `npm run lint`, `npm run typecheck` and `npm test`) before pushing. All changes go through pull requests.
 
 ## License
 
