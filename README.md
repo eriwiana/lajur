@@ -23,6 +23,10 @@ Open it through `localhost` or your own domain, not `file://`. YouTube's chat em
 
 For live-reload development, use Node 22 and `npm run dev` instead.
 
+## Deploy
+
+The image is plain static hosting on port 8080, so it runs on any container platform (Docker, Fly.io, Railway, Cloud Run, Kubernetes, a VPS). Put it behind HTTPS on your own domain. Video and chat only work on the domain the page is served from, so test once after each deploy.
+
 ## How to use
 
 1. Paste one or more YouTube links or video IDs and click **Tambah** (Add).
@@ -46,7 +50,6 @@ Recognised links: `watch?v=`, `youtu.be/`, `/live/`, `/embed/`, `/shorts/`, and 
 - Audio control relies on YouTube behaviour that is not formally documented. It may stop working if YouTube changes it.
 - Chat uses the Google account that is active on youtube.com in your browser, and needs third-party cookies for youtube.com. If "Sign in to chat" picks the wrong account, change your default Google account, use a separate browser profile, or allow third-party cookies for this site. The page cannot choose the account for you.
 - Chat colours are controlled by YouTube and can differ between browsers.
-- On a deployed site, video and chat only work on the domain they were loaded from. Test after each deploy.
 
 ## Compliance
 
