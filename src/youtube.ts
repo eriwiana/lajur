@@ -85,28 +85,22 @@ export function listen(iframe: HTMLIFrameElement): void {
   iframe.contentWindow?.postMessage(JSON.stringify({ event: 'listening', id: 1, channel: 'widget' }), '*');
 }
 
-function onPlayerMessage(
-  cb: (source: MessageEventSource, msg: { event?: string; info?: unknown }) => void,
-): void {
+interface PlayerHandlers {
+  ready: (source: MessageEventSource) => void;
+  error: (source: MessageEventSource, code: number) => void;
+}
+
+// Satu-satunya listener pesan dari player; semua event player masuk lewat sini.
+export function onPlayerEvents(h: PlayerHandlers): void {
   window.addEventListener('message', (e) => {
     if (e.origin !== 'https://www.youtube.com' || !e.source || typeof e.data !== 'string') return;
     try {
-      cb(e.source, JSON.parse(e.data));
+      const { event, info } = JSON.parse(e.data);
+      if (event === 'onReady' || event === 'initialDelivery') h.ready(e.source);
+      else if (event === 'onError' && typeof info === 'number') h.error(e.source, info);
     } catch {
       /* bukan pesan JSON */
     }
-  });
-}
-
-export function onPlayerReady(cb: (source: MessageEventSource) => void): void {
-  onPlayerMessage((source, { event }) => {
-    if (event === 'onReady' || event === 'initialDelivery') cb(source);
-  });
-}
-
-export function onPlayerError(cb: (source: MessageEventSource, code: number) => void): void {
-  onPlayerMessage((source, { event, info }) => {
-    if (event === 'onError' && typeof info === 'number') cb(source, info);
   });
 }
 
