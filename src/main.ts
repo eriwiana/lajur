@@ -1,5 +1,5 @@
 import './style.css';
-import { decodeState, encodeState, LAYOUTS, type Layout, MAX_TILES, type State } from './state.ts';
+import { decodeState, encodeState, MAX_TILES, type State } from './state.ts';
 import { chatUrl, listen, onPlayerReady, parseMany, playerUrl, setAudio } from './youtube.ts';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -8,7 +8,6 @@ const form = $<HTMLFormElement>('add-form');
 const input = $<HTMLInputElement>('add-input');
 const addBtn = $<HTMLButtonElement>('add-btn');
 const clearBtn = $<HTMLButtonElement>('clear-btn');
-const layoutSel = $<HTMLSelectElement>('layout');
 const counter = $('counter');
 const message = $('message');
 const grid = $('grid');
@@ -25,14 +24,13 @@ interface Tile {
 
 const tiles = new Map<string, Tile>();
 let focusId: string | null = null;
-let layoutName: Layout = 'grid';
 
 function say(text: string): void {
   message.textContent = text;
 }
 
 function currentState(): State {
-  return { ids: [...tiles.keys()], focus: focusId, layout: layoutName };
+  return { ids: [...tiles.keys()], focus: focusId };
 }
 
 function syncUrl(): void {
@@ -47,12 +45,6 @@ function layout(): void {
   empty.hidden = n > 0;
   addBtn.disabled = n >= MAX_TILES;
   clearBtn.disabled = n === 0;
-}
-
-function setLayout(l: Layout): void {
-  layoutName = l;
-  grid.dataset.layout = l;
-  layoutSel.value = l;
 }
 
 function applyAudio(t: Tile): void {
@@ -158,7 +150,6 @@ function clearAll(): void {
 function loadFromHash(): void {
   const s = decodeState(location.hash);
   clearAll();
-  setLayout(s.layout);
   // Set dulu supaya addTiles tidak auto-fokus tile pertama (chat dimuat dua kali).
   focusId = s.focus;
   addTiles(s.ids);
@@ -182,13 +173,6 @@ form.addEventListener('submit', (e) => {
 clearBtn.addEventListener('click', () => {
   say('');
   clearAll();
-});
-
-layoutSel.addEventListener('change', () => {
-  const l = LAYOUTS.find((x) => x === layoutSel.value);
-  if (!l) return;
-  setLayout(l);
-  syncUrl();
 });
 
 window.addEventListener('hashchange', loadFromHash);

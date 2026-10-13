@@ -42,14 +42,6 @@ header form {
   min-width: 0;
 }
 
-select {
-  padding: 5px 8px;
-  background: var(--panel);
-  color: var(--fg);
-  border: 1px solid var(--line);
-  border-radius: 4px;
-}
-
 input {
   flex: 1;
   min-width: 0;
@@ -112,7 +104,8 @@ main {
   display: grid;
   gap: 6px;
   padding: 6px;
-  grid-template-columns: 1fr 1fr;
+  /* Tile aktif besar di kolom 1, sisanya ditumpuk di kolom 2. Urutan DOM tetap: memindah iframe me-reload player. */
+  grid-template-columns: 3fr 1fr;
   align-content: start;
 }
 #grid[data-count="1"] {
@@ -130,9 +123,12 @@ main {
   border-radius: 6px;
   overflow: hidden;
   min-width: 0;
+  grid-column: 2;
 }
 .tile.active {
   border-color: var(--accent);
+  grid-column: 1;
+  grid-row: 1 / span 3;
 }
 .tile .frame {
   aspect-ratio: 16 / 9;
@@ -154,29 +150,6 @@ main {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-/* Preset hanya mengubah penempatan grid. Urutan DOM tetap: memindah iframe me-reload player. */
-#grid[data-layout="row"] {
-  grid-template-columns: none;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
-}
-#grid[data-layout="col"] {
-  grid-template-columns: 1fr;
-}
-#grid[data-layout="focus"] {
-  grid-template-columns: 3fr 1fr;
-}
-#grid[data-layout="focus"][data-count="1"] {
-  grid-template-columns: 1fr;
-}
-#grid[data-layout="focus"] .tile {
-  grid-column: 2;
-}
-#grid[data-layout="focus"] .tile.active {
-  grid-column: 1;
-  grid-row: 1 / span 3;
 }
 
 aside {
