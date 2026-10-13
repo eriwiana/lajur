@@ -104,7 +104,8 @@ main {
   display: grid;
   gap: 6px;
   padding: 6px;
-  grid-template-columns: 1fr 1fr;
+  /* Tile aktif besar di kolom 1, sisanya ditumpuk di kolom 2. Urutan DOM tetap: memindah iframe me-reload player. */
+  grid-template-columns: 3fr 1fr;
   align-content: start;
 }
 #grid[data-count="1"] {
@@ -122,9 +123,12 @@ main {
   border-radius: 6px;
   overflow: hidden;
   min-width: 0;
+  grid-column: 2;
 }
 .tile.active {
   border-color: var(--accent);
+  grid-column: 1;
+  grid-row: 1 / span 3;
 }
 .tile .frame {
   aspect-ratio: 16 / 9;
