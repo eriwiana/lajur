@@ -105,9 +105,9 @@ main {
   gap: 6px;
   padding: 6px;
   height: 100%;
-  /* Tile aktif besar di kolom 1, sisanya ditumpuk di kolom 2. Urutan DOM tetap: memindah iframe me-reload player. */
+  /* The active tile is big in column 1, the rest stack in column 2. DOM order stays fixed: moving an iframe reloads the player. */
   grid-template-columns: 3fr 1fr;
-  /* Satu baris per tile strip, tinggi dibagi rata: semua tile mengisi layar. */
+  /* One row per strip tile, height split evenly: all tiles fill the screen. */
   grid-template-rows: minmax(0, 1fr);
 }
 #grid[data-count="3"] {

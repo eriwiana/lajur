@@ -29,8 +29,8 @@ The image is plain static hosting on port 8080, so it runs on any container plat
 
 ## How to use
 
-1. Paste one or more YouTube links or video IDs and click **Tambah** (Add).
-2. Click **Fokus** (Focus) on a tile. That tile gets sound and the big slot, the others are muted and stacked on the right, and chat switches to it.
+1. Paste one or more YouTube links or video IDs and click **Add**.
+2. Click **Focus** on a tile. That tile gets sound and the big slot, the others are muted and stacked on the right, and chat switches to it.
 3. Your videos and focus are saved in the page URL, so you can share or refresh it.
 
 Recognised links: `watch?v=`, `youtu.be/`, `/live/`, `/embed/`, `/shorts/`, and bare video IDs.
@@ -46,7 +46,7 @@ Recognised links: `watch?v=`, `youtu.be/`, `/live/`, `/embed/`, `/shorts/`, and 
 ## Known limits
 
 - Some videos cannot be embedded, and chat can be off or members-only. A tile shows the reason when YouTube reports one.
-- Videos start muted because browsers block autoplay with sound. After opening a shared link, click **Fokus** once to hear audio.
+- Videos start muted because browsers block autoplay with sound. After opening a shared link, click **Focus** once to hear audio.
 - Audio control relies on YouTube behaviour that is not formally documented. It may stop working if YouTube changes it.
 - Chat uses the Google account that is active on youtube.com in your browser, and needs third-party cookies for youtube.com. If "Sign in to chat" picks the wrong account, change your default Google account, use a separate browser profile, or allow third-party cookies for this site. The page cannot choose the account for you.
 - Chat colours are controlled by YouTube and can differ between browsers.

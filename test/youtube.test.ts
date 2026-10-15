@@ -9,13 +9,13 @@ const ID3 = 'aqz-KE-bpKQ';
 const ID4 = '9bZkp7q19f0';
 const ID5 = 'kJQP7kiw5Fk';
 
-test('parseVideoId: ID mentah', () => {
+test('parseVideoId: raw ID', () => {
   assert.equal(parseVideoId(ID), ID);
   assert.equal(parseVideoId(`  ${ID}  `), ID);
-  assert.equal(parseVideoId(ID3), ID3); // mengandung '-'
+  assert.equal(parseVideoId(ID3), ID3); // contains '-'
 });
 
-test('parseVideoId: berbagai format URL', () => {
+test('parseVideoId: URL formats', () => {
   const urls = [
     `https://www.youtube.com/watch?v=${ID}`,
     `https://youtube.com/watch?v=${ID}&t=42s`,
@@ -32,29 +32,29 @@ test('parseVideoId: berbagai format URL', () => {
   for (const u of urls) assert.equal(parseVideoId(u), ID, u);
 });
 
-test('parseVideoId: input tidak valid', () => {
+test('parseVideoId: invalid input', () => {
   const bad = [
     '',
     '   ',
-    'halo',
+    'hello',
     'abc',
     'https://example.com/watch?v=dQw4w9WgXcQ',
     'https://evil.com/youtu.be/dQw4w9WgXcQ',
     'https://www.youtube.com/@channel',
-    'https://www.youtube.com/watch?v=pendek',
-    'https://www.youtube.com/live/pendek',
-    'https://youtu.be/dQw4w9WgXcQterlalupanjang',
+    'https://www.youtube.com/watch?v=short',
+    'https://www.youtube.com/live/short',
+    'https://youtu.be/dQw4w9WgXcQtoolong',
   ];
   for (const b of bad) assert.equal(parseVideoId(b), null, JSON.stringify(b));
 });
 
-test('parseMany: pisah spasi/koma/baris, dedupe, laporkan invalid', () => {
+test('parseMany: splits on space/comma/newline, dedupes, reports invalid', () => {
   const r = parseMany(`${ID}, https://youtu.be/${ID2}\n${ID}  nonsense`);
   assert.deepEqual(r.ids, [ID, ID2]);
   assert.deepEqual(r.invalid, ['nonsense']);
 });
 
-test('URL builder: parameter di-encode', () => {
+test('URL builders: params are encoded', () => {
   const p = playerUrl(ID, 'http://localhost:5173');
   assert.ok(p.startsWith(`https://www.youtube.com/embed/${ID}?`));
   assert.ok(p.includes('mute=1'));
@@ -65,43 +65,43 @@ test('URL builder: parameter di-encode', () => {
   );
 });
 
-test('state: round-trip lewat hash', () => {
+test('state: round-trips through the hash', () => {
   const s = { ids: [ID, ID2], focus: ID2 };
   const h = encodeState(s);
   assert.equal(h, `#v=${ID},${ID2}&f=${ID2}`);
   assert.deepEqual(decodeState(h), s);
 });
 
-test('state: hash kosong dan rusak', () => {
+test('state: empty and broken hash', () => {
   assert.deepEqual(decodeState(''), { ids: [], focus: null });
   assert.equal(encodeState({ ids: [], focus: null }), '');
-  assert.deepEqual(decodeState('#v=bukan-id,,%%%'), { ids: [], focus: null });
+  assert.deepEqual(decodeState('#v=not-an-id,,%%%'), { ids: [], focus: null });
 });
 
-test('state: batas tile, dedupe, fokus harus ada di daftar', () => {
+test('state: tile cap, dedupe, focus must be in the list', () => {
   const h = `#v=${ID},${ID2},${ID3},${ID4},${ID5}&f=${ID5}`;
   const s = decodeState(h);
   assert.equal(s.ids.length, MAX_TILES);
-  assert.equal(s.focus, null); // ID5 terpotong oleh batas
+  assert.equal(s.focus, null); // ID5 was cut off by the cap
   assert.deepEqual(decodeState(`#v=${ID},${ID}`).ids, [ID]);
   assert.equal(decodeState(`#v=${ID}&f=${ID2}`).focus, null);
 });
 
-test('errorMessage: 101 dan 150 sama-sama berarti embed dilarang', () => {
+test('errorMessage: 101 and 150 both mean embedding is disabled', () => {
   assert.equal(errorMessage(101), errorMessage(150));
   assert.match(errorMessage(101), /embed/);
 });
 
-test('errorMessage: kode tidak dikenal jatuh ke pesan umum', () => {
-  assert.equal(errorMessage(999), 'Player gagal memuat');
+test('errorMessage: unknown code falls back to the generic message', () => {
+  assert.equal(errorMessage(999), 'Player failed to load');
 });
 
-test('fetchTitle: ambil judul dari oEmbed', async (t) => {
-  t.mock.method(globalThis, 'fetch', async () => Response.json({ title: 'Judul Live' }));
-  assert.equal(await fetchTitle(ID), 'Judul Live');
+test('fetchTitle: reads the title from oEmbed', async (t) => {
+  t.mock.method(globalThis, 'fetch', async () => Response.json({ title: 'Live Title' }));
+  assert.equal(await fetchTitle(ID), 'Live Title');
 });
 
-test('fetchTitle: null kalau respons gagal atau jaringan putus', async (t) => {
+test('fetchTitle: null on a failed response or network error', async (t) => {
   const f = t.mock.method(globalThis, 'fetch', async () => new Response('', { status: 404 }));
   assert.equal(await fetchTitle(ID), null);
   f.mock.mockImplementation(async () => {

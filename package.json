@@ -2,7 +2,7 @@
   "name": "lajur",
   "private": true,
   "version": "0.2.1",
-  "description": "Tonton beberapa live YouTube sekaligus dengan chat yang ikut pindah.",
+  "description": "Watch several YouTube live streams at once, with chat that follows your focus.",
   "license": "MIT",
   "type": "module",
   "scripts": {
