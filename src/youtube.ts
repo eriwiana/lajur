@@ -32,21 +32,6 @@ export function parseVideoId(input: string): string | null {
   return m ? m[1] : null;
 }
 
-/** Split several inputs (spaces, commas, newlines) and parse each one. */
-export function parseMany(input: string): { ids: string[]; invalid: string[] } {
-  const ids: string[] = [];
-  const invalid: string[] = [];
-  for (const part of input.split(/[\s,]+/).filter(Boolean)) {
-    const id = parseVideoId(part);
-    if (id) {
-      if (!ids.includes(id)) ids.push(id);
-    } else {
-      invalid.push(part);
-    }
-  }
-  return { ids, invalid };
-}
-
 export function playerUrl(id: string, origin: string): string {
   const p = new URLSearchParams({
     enablejsapi: '1',

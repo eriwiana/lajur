@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { parseMany } from '../src/sources.ts';
 import { decodeState, encodeState, MAX_TILES } from '../src/state.ts';
-import { chatUrl, errorMessage, fetchTitle, parseMany, parseVideoId, playerUrl } from '../src/youtube.ts';
+import { chatUrl, errorMessage, fetchTitle, parseVideoId, playerUrl } from '../src/youtube.ts';
 
 const ID = 'dQw4w9WgXcQ';
 const ID2 = 'jNQXAC9IVRw';
@@ -50,7 +51,7 @@ test('parseVideoId: invalid input', () => {
 
 test('parseMany: splits on space/comma/newline, dedupes, reports invalid', () => {
   const r = parseMany(`${ID}, https://youtu.be/${ID2}\n${ID}  nonsense`);
-  assert.deepEqual(r.ids, [ID, ID2]);
+  assert.deepEqual(r.keys, [`yt:${ID}`, `yt:${ID2}`]);
   assert.deepEqual(r.invalid, ['nonsense']);
 });
 
@@ -66,24 +67,24 @@ test('URL builders: params are encoded', () => {
 });
 
 test('state: round-trips through the hash', () => {
-  const s = { ids: [ID, ID2], focus: ID2 };
+  const s = { keys: [`yt:${ID}`, `yt:${ID2}`], focus: `yt:${ID2}` };
   const h = encodeState(s);
-  assert.equal(h, `#v=${ID},${ID2}&f=${ID2}`);
+  assert.equal(h, `#v=yt:${ID},yt:${ID2}&f=yt:${ID2}`);
   assert.deepEqual(decodeState(h), s);
 });
 
 test('state: empty and broken hash', () => {
-  assert.deepEqual(decodeState(''), { ids: [], focus: null });
-  assert.equal(encodeState({ ids: [], focus: null }), '');
-  assert.deepEqual(decodeState('#v=not-an-id,,%%%'), { ids: [], focus: null });
+  assert.deepEqual(decodeState(''), { keys: [], focus: null });
+  assert.equal(encodeState({ keys: [], focus: null }), '');
+  assert.deepEqual(decodeState('#v=not-an-id,,%%%'), { keys: [], focus: null });
 });
 
 test('state: tile cap, dedupe, focus must be in the list', () => {
   const h = `#v=${ID},${ID2},${ID3},${ID4},${ID5}&f=${ID5}`;
   const s = decodeState(h);
-  assert.equal(s.ids.length, MAX_TILES);
+  assert.equal(s.keys.length, MAX_TILES);
   assert.equal(s.focus, null); // ID5 was cut off by the cap
-  assert.deepEqual(decodeState(`#v=${ID},${ID}`).ids, [ID]);
+  assert.deepEqual(decodeState(`#v=${ID},yt:${ID}`).keys, [`yt:${ID}`]);
   assert.equal(decodeState(`#v=${ID}&f=${ID2}`).focus, null);
 });
 
@@ -112,6 +113,6 @@ test('fetchTitle: null on a failed response or network error', async (t) => {
 
 test('state: legacy hash with bare video IDs still decodes', () => {
   const s = decodeState(`#v=${ID},${ID2}&f=${ID2}`);
-  assert.equal(s.ids.length, 2);
-  assert.equal(s.focus, s.ids[1]);
+  assert.deepEqual(s.keys, [`yt:${ID}`, `yt:${ID2}`]);
+  assert.equal(s.focus, `yt:${ID2}`);
 });
