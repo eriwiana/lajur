@@ -1,12 +1,12 @@
-// Semua yang bergantung pada perilaku/URL YouTube diisolasi di modul ini.
-// Kalau YouTube mengubah embed atau chat, perbaikan cukup di sini.
+// Everything that depends on YouTube behaviour or URLs is isolated in this module.
+// If YouTube changes its embed or chat, the fix belongs here.
 
 const ID_RE = /^[A-Za-z0-9_-]{11}$/;
 const PATH_ID_RE = /^\/(?:live|embed|shorts|v)\/([A-Za-z0-9_-]{11})(?:[/?#]|$)/;
 const SHORT_ID_RE = /^\/([A-Za-z0-9_-]{11})(?:\/|$)/;
 const YT_HOSTS = new Set(['youtube.com', 'www.youtube.com', 'm.youtube.com', 'music.youtube.com']);
 
-/** Ambil video ID dari ID mentah atau URL YouTube. Mengembalikan null kalau tidak valid. */
+/** Extract the video ID from a raw ID or a YouTube URL. Returns null if invalid. */
 export function parseVideoId(input: string): string | null {
   const s = input.trim();
   if (!s) return null;
@@ -32,7 +32,7 @@ export function parseVideoId(input: string): string | null {
   return m ? m[1] : null;
 }
 
-/** Pisahkan beberapa input (spasi, koma, baris baru) lalu parse masing-masing. */
+/** Split several inputs (spaces, commas, newlines) and parse each one. */
 export function parseMany(input: string): { ids: string[]; invalid: string[] } {
   const ids: string[] = [];
   const invalid: string[] = [];
@@ -58,7 +58,7 @@ export function playerUrl(id: string, origin: string): string {
   return `https://www.youtube.com/embed/${id}?${p}`;
 }
 
-/** Judul video lewat oEmbed publik YouTube. Null kalau gagal, pemanggil jatuh ke ID. */
+/** Video title via YouTube's public oEmbed. Null on failure; the caller falls back to the ID. */
 export async function fetchTitle(id: string): Promise<string | null> {
   const p = new URLSearchParams({ url: `https://www.youtube.com/watch?v=${id}`, format: 'json' });
   try {
@@ -76,8 +76,8 @@ export function chatUrl(id: string, hostname: string): string {
   return `https://www.youtube.com/live_chat?${p}`;
 }
 
-// Kontrol player lewat postMessage. Ini protokol IFrame API yang tidak
-// terdokumentasi rapi untuk pemakaian langsung, jadi dijaga di satu tempat.
+// Player control via postMessage. This IFrame API protocol is not well documented
+// for direct use, so it is kept in one place.
 function send(iframe: HTMLIFrameElement, func: string, args: unknown[] = []): void {
   iframe.contentWindow?.postMessage(JSON.stringify({ event: 'command', func, args }), '*');
 }
@@ -91,9 +91,9 @@ export function setAudio(iframe: HTMLIFrameElement, on: boolean): void {
   }
 }
 
-// Perintah yang dikirim sebelum player di dalam iframe siap akan dibuang diam-diam
-// (event `load` iframe terjadi lebih awal dari player). Minta player melapor lewat
-// handshake 'listening', lalu panggil cb saat ia melaporkan siap.
+// Commands sent before the player inside the iframe is ready are silently dropped
+// (the iframe `load` event fires earlier than the player). Ask the player to report
+// in through the 'listening' handshake; it then reports when it is ready.
 export function listen(iframe: HTMLIFrameElement): void {
   iframe.contentWindow?.postMessage(JSON.stringify({ event: 'listening', id: 1, channel: 'widget' }), '*');
 }
@@ -103,7 +103,7 @@ interface PlayerHandlers {
   error: (source: MessageEventSource, code: number) => void;
 }
 
-// Satu-satunya listener pesan dari player; semua event player masuk lewat sini.
+// The only listener for player messages; every player event comes in through here.
 export function onPlayerEvents(h: PlayerHandlers): void {
   window.addEventListener('message', (e) => {
     if (e.origin !== 'https://www.youtube.com' || !e.source || typeof e.data !== 'string') return;
@@ -112,15 +112,15 @@ export function onPlayerEvents(h: PlayerHandlers): void {
       if (event === 'onReady' || event === 'initialDelivery') h.ready(e.source);
       else if (event === 'onError' && typeof info === 'number') h.error(e.source, info);
     } catch {
-      /* bukan pesan JSON */
+      /* not a JSON message */
     }
   });
 }
 
-/** Kode error IFrame API: 2 ID tidak valid, 5 gagal memuat, 100 tidak ada/privat, 101/150 embed dilarang. */
+/** IFrame API error codes: 2 invalid ID, 5 failed to load, 100 missing/private, 101/150 embedding disabled. */
 export function errorMessage(code: number): string {
-  if (code === 101 || code === 150) return 'Pemilik video melarang embed';
-  if (code === 100) return 'Video tidak ditemukan atau privat';
-  if (code === 2) return 'ID video tidak valid';
-  return 'Player gagal memuat';
+  if (code === 101 || code === 150) return 'The video owner disabled embedding';
+  if (code === 100) return 'Video not found or private';
+  if (code === 2) return 'Invalid video ID';
+  return 'Player failed to load';
 }

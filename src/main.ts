@@ -87,11 +87,11 @@ function createTile(id: string): Tile {
   label.textContent = id;
   const focusBtn = document.createElement('button');
   focusBtn.type = 'button';
-  focusBtn.textContent = 'Fokus';
+  focusBtn.textContent = 'Focus';
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
   removeBtn.className = 'secondary';
-  removeBtn.textContent = 'Hapus';
+  removeBtn.textContent = 'Remove';
   bar.append(label, focusBtn, removeBtn);
   el.append(frame, bar);
 
@@ -101,8 +101,8 @@ function createTile(id: string): Tile {
     tile.name = title;
     renderLabel(tile);
   });
-  // Player baru mulai muted (mute=1). `load` iframe terlalu dini untuk perintah audio:
-  // daftar ke player, terapkan audio saat ia lapor siap (lihat onPlayerEvents di bawah).
+  // A new player starts muted (mute=1). The iframe `load` event is too early for audio commands:
+  // register with the player and apply audio when it reports ready (see onPlayerEvents below).
   iframe.addEventListener('load', () => listen(iframe));
   iframe.src = playerUrl(id, location.origin);
 
@@ -133,16 +133,16 @@ function setFocus(id: string | null): void {
   for (const t of tiles.values()) {
     const on = t.id === id;
     t.el.classList.toggle('active', on);
-    t.focusBtn.textContent = on ? 'Aktif' : 'Fokus';
+    t.focusBtn.textContent = on ? 'Active' : 'Focus';
     applyAudio(t);
   }
-  // Hanya satu iframe chat yang hidup; ganti src saat fokus pindah.
+  // Only one chat iframe is alive; swap its src when focus moves.
   if (id) {
     chat.src = chatUrl(id, location.hostname);
     chatTitle.textContent = `Chat: ${id}`;
   } else {
     chat.removeAttribute('src');
-    chatTitle.textContent = 'Pilih satu tile lalu klik "Fokus" untuk membuka chat.';
+    chatTitle.textContent = 'Pick a tile and click "Focus" to open its chat.';
   }
   syncUrl();
 }
@@ -160,8 +160,8 @@ function addTiles(ids: string[]): void {
     grid.append(t.el);
   }
   layout();
-  if (skippedFull) say(`Maksimal ${MAX_TILES} tile. ${skippedFull} video tidak ditambahkan.`);
-  // Otomatis fokus ke tile pertama kalau belum ada yang aktif.
+  if (skippedFull) say(`At most ${MAX_TILES} tiles. ${skippedFull} video(s) not added.`);
+  // Focus the first tile automatically when none is active.
   if (!focusId && tiles.size) setFocus(tiles.keys().next().value ?? null);
   else syncUrl();
 }
@@ -186,7 +186,7 @@ function clearAll(): void {
 function loadFromHash(): void {
   const s = decodeState(location.hash);
   clearAll();
-  // Set dulu supaya addTiles tidak auto-fokus tile pertama (chat dimuat dua kali).
+  // Set first so addTiles does not auto-focus the first tile (the chat would load twice).
   focusId = s.focus;
   addTiles(s.ids);
   if (s.focus) setFocus(s.focus);
@@ -197,11 +197,11 @@ form.addEventListener('submit', (e) => {
   say('');
   const { ids, invalid } = parseMany(input.value);
   if (!ids.length) {
-    say(invalid.length ? `Tidak dikenali: ${invalid.join(', ')}` : 'Masukkan URL atau video ID YouTube.');
+    say(invalid.length ? `Not recognised: ${invalid.join(', ')}` : 'Enter a YouTube URL or video ID.');
     return;
   }
   addTiles(ids);
-  if (invalid.length) say(`Tidak dikenali: ${invalid.join(', ')}`);
+  if (invalid.length) say(`Not recognised: ${invalid.join(', ')}`);
   input.value = '';
   input.focus();
 });

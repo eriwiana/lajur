@@ -7,7 +7,7 @@ export interface State {
   focus: string | null;
 }
 
-/** State disimpan di URL hash supaya bisa di-share: #v=ID1,ID2&f=ID1 */
+/** State is kept in the URL hash so it can be shared: #v=ID1,ID2&f=ID1 */
 export function encodeState(s: State): string {
   const p = new URLSearchParams();
   if (s.ids.length) p.set('v', s.ids.join(','));

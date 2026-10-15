@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,26 +8,26 @@
 <body>
   <header>
     <form id="add-form">
-      <input id="add-input" placeholder="Tempel URL atau video ID YouTube (boleh banyak, pisah spasi/koma)" autocomplete="off">
-      <button id="add-btn" type="submit">Tambah</button>
+      <input id="add-input" placeholder="Paste YouTube URLs or video IDs (several allowed, separated by space or comma)" autocomplete="off">
+      <button id="add-btn" type="submit">Add</button>
     </form>
     <span id="counter">0/4</span>
-    <button id="clear-btn" class="secondary" type="button">Kosongkan</button>
+    <button id="clear-btn" class="secondary" type="button">Clear</button>
   </header>
   <div id="message" role="status"></div>
 
   <main>
     <div id="grid-wrap">
-      <p id="empty">Belum ada video. Tempel URL live YouTube di atas.</p>
+      <p id="empty">No videos yet. Paste a YouTube live URL above.</p>
       <section id="grid" data-count="0"></section>
     </div>
     <aside>
-      <div class="title" id="chat-title">Pilih satu tile lalu klik "Fokus" untuk membuka chat.</div>
+      <div class="title" id="chat-title">Pick a tile and click "Focus" to open its chat.</div>
       <iframe id="chat" title="Live chat" allow="clipboard-write"></iframe>
     </aside>
   </main>
 
-  <footer>Tidak berafiliasi dengan YouTube. Semua video dan chat dimuat lewat embed resmi YouTube.</footer>
+  <footer>Not affiliated with YouTube. All video and chat load through YouTube's official embeds.</footer>
 
   <script type="module" src="/src/main.ts"></script>
 </body>
