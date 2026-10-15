@@ -1,6 +1,6 @@
 # Lajur
 
-Watch up to four YouTube live streams on one page. Live chat follows the stream you focus on. You sign in with your own YouTube account through YouTube's official embeds.
+Watch up to four YouTube, Twitch or Kick live streams on one page, mixed freely. Live chat follows the stream you focus on. You sign in with your own account inside each platform's official chat embed.
 
 > Status: v0.1. Tested on desktop Chromium and Safari only. Firefox is untested.
 
@@ -19,7 +19,7 @@ To check the code, build the `test` target. It runs the style check, type check 
 docker build --target test .
 ```
 
-Open it through `localhost` or your own domain, not `file://`. YouTube's chat embed needs a real hostname.
+Open it through `localhost` or your own domain, not `file://`. The chat embeds (YouTube, Twitch) need a real hostname.
 
 For live-reload development, use Node 22 and `npm run dev` instead.
 
@@ -29,17 +29,18 @@ The image is plain static hosting on port 8080, so it runs on any container plat
 
 ## How to use
 
-1. Paste one or more YouTube links or video IDs and click **Add**.
+1. Paste one or more YouTube, Twitch or Kick links (or YouTube video IDs) and click **Add**.
 2. Click **Focus** on a tile. That tile gets sound and the big slot, the others are muted and stacked on the right, and chat switches to it.
 3. Your videos and focus are saved in the page URL, so you can share or refresh it.
 
-Recognised links: `watch?v=`, `youtu.be/`, `/live/`, `/embed/`, `/shorts/`, and bare video IDs.
+Recognised links: YouTube `watch?v=`, `youtu.be/`, `/live/`, `/embed/`, `/shorts/` and bare video IDs; Twitch `twitch.tv/<channel>`; Kick `kick.com/<channel>`.
 
 ## Project layout
 
 | File | Purpose |
 | --- | --- |
 | `src/youtube.ts` | Everything that depends on YouTube: links, embeds, audio control |
+| `src/sources.ts` | Source keys (`yt:`, `tw:`, `kick:`), link parsing, Twitch and Kick embed URLs |
 | `src/state.ts` | Saving and restoring the page state |
 | `src/main.ts` | The interface |
 
@@ -49,13 +50,16 @@ Recognised links: `watch?v=`, `youtu.be/`, `/live/`, `/embed/`, `/shorts/`, and 
 - Videos start muted because browsers block autoplay with sound. After opening a shared link, click **Focus** once to hear audio.
 - Audio control relies on YouTube behaviour that is not formally documented. It may stop working if YouTube changes it.
 - Chat uses the Google account that is active on youtube.com in your browser, and needs third-party cookies for youtube.com. If "Sign in to chat" picks the wrong account, change your default Google account, use a separate browser profile, or allow third-party cookies for this site. The page cannot choose the account for you.
-- Chat colours are controlled by YouTube and can differ between browsers.
+- Chat colours are controlled by the platform and can differ between browsers.
+- Twitch and Kick players have no audio API, so focusing a tile reloads those players with sound on (and the previous one muted). Expect a brief flash.
+- Twitch embeds only play on `localhost` or the domain the page is served from.
+- Kick has no documented chat embed. The popout chat may refuse to load in the sidebar, so an "Open chat in a new tab" link is shown for Kick tiles.
 
 ## Compliance
 
-Lajur only shows YouTube's official embeds. Please do not add proxies, downloads, or ad blocking. Anyone who deploys it is responsible for following the [YouTube Terms of Service](https://www.youtube.com/t/terms) and current API and embed policies.
+Lajur only shows the platforms' official embeds. Please do not add proxies, downloads, or ad blocking. Anyone who deploys it is responsible for following the terms of service and embed policies of YouTube, Twitch and Kick.
 
-Lajur is not affiliated with or endorsed by YouTube or Google.
+Lajur is not affiliated with or endorsed by YouTube, Google, Twitch or Kick.
 
 ## Contributing
 
