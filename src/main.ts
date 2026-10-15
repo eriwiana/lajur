@@ -17,7 +17,7 @@ const chat = $<HTMLIFrameElement>('chat');
 const chatTitle = $('chat-title');
 
 interface Tile {
-  id: string;
+  key: string;
   el: HTMLElement;
   iframe: HTMLIFrameElement;
   label: HTMLElement;
@@ -52,7 +52,7 @@ function layout(): void {
 }
 
 function applyAudio(t: Tile): void {
-  setAudio(t.iframe, t.id === focusId);
+  setAudio(t.iframe, t.key === focusId);
 }
 
 function renderLabel(t: Tile): void {
@@ -88,7 +88,7 @@ function createTile(key: string): Tile {
   bar.append(label, focusBtn, removeBtn);
   el.append(frame, bar);
 
-  const tile: Tile = { id: key, el, iframe, label, name: id, focusBtn };
+  const tile: Tile = { key, el, iframe, label, name: id, focusBtn };
   fetchTitle(id).then((title) => {
     if (!title) return;
     tile.name = title;
@@ -124,7 +124,7 @@ onPlayerEvents({
 function setFocus(id: string | null): void {
   focusId = id;
   for (const t of tiles.values()) {
-    const on = t.id === id;
+    const on = t.key === id;
     t.el.classList.toggle('active', on);
     t.focusBtn.textContent = on ? 'Active' : 'Focus';
     applyAudio(t);
