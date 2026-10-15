@@ -109,3 +109,9 @@ test('fetchTitle: null on a failed response or network error', async (t) => {
   });
   assert.equal(await fetchTitle(ID), null);
 });
+
+test('state: legacy hash with bare video IDs still decodes', () => {
+  const s = decodeState(`#v=${ID},${ID2}&f=${ID2}`);
+  assert.equal(s.ids.length, 2);
+  assert.equal(s.focus, s.ids[1]);
+});
