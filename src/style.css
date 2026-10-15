@@ -140,6 +140,10 @@ aside .title {
   color: var(--muted);
   border-bottom: 1px solid var(--line);
 }
+aside a {
+  padding: 8px;
+  border-bottom: 1px solid var(--line);
+}
 aside iframe {
   flex: 1;
   background: #000;
