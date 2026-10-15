@@ -8,7 +8,7 @@
 <body>
   <header>
     <form id="add-form">
-      <input id="add-input" placeholder="Paste YouTube URLs or video IDs (several allowed, separated by space or comma)" autocomplete="off">
+      <input id="add-input" placeholder="Paste YouTube, Twitch or Kick URLs (several allowed, separated by space or comma)" autocomplete="off">
       <button id="add-btn" type="submit">Add</button>
     </form>
     <span id="counter">0/4</span>
@@ -18,16 +18,17 @@
 
   <main>
     <div id="grid-wrap">
-      <p id="empty">No videos yet. Paste a YouTube live URL above.</p>
+      <p id="empty">No streams yet. Paste a YouTube, Twitch or Kick URL above.</p>
       <section id="grid" data-count="0"></section>
     </div>
     <aside>
       <div class="title" id="chat-title">Pick a tile and click "Focus" to open its chat.</div>
+      <a id="chat-link" href="about:blank" target="_blank" rel="noopener" hidden>Open chat in a new tab</a>
       <iframe id="chat" title="Live chat" allow="clipboard-write"></iframe>
     </aside>
   </main>
 
-  <footer>Not affiliated with YouTube. All video and chat load through YouTube's official embeds.</footer>
+  <footer>Not affiliated with YouTube, Twitch or Kick. All video and chat load through each platform's official embeds.</footer>
 
   <script type="module" src="/src/main.ts"></script>
 </body>
