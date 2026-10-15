@@ -68,3 +68,17 @@ Issues and pull requests are welcome. Run the `test` target (or `npm run lint`, 
 ## License
 
 [MIT](LICENSE)
+
+## AI assistance
+
+Lajur was developed with the assistance of Claude Sonnet 5.5 (Anthropic), used through Claude Code for
+the whole development process. The assistant helped explore the code, draft changes, write tests and
+prepare pull requests.
+
+The maintainer directed the work and is responsible for it. Every change goes through a pull request,
+the automated checks (style, type check, unit tests, container build) and human review before it is
+merged. The assistant is a tool, not an author: it holds no copyright and carries no accountability for
+the code.
+
+Some behaviour depends on third-party embeds (YouTube, Twitch, Kick) and was only checked as far as the
+maintainer could test it. See [Known limits](#known-limits). Please report anything that looks wrong.
