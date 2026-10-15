@@ -1,15 +1,7 @@
 import './style.css';
+import { nameOf, parseMany } from './sources.ts';
 import { decodeState, encodeState, MAX_TILES, type State } from './state.ts';
-import {
-  chatUrl,
-  errorMessage,
-  fetchTitle,
-  listen,
-  onPlayerEvents,
-  parseMany,
-  playerUrl,
-  setAudio,
-} from './youtube.ts';
+import { chatUrl, errorMessage, fetchTitle, listen, onPlayerEvents, playerUrl, setAudio } from './youtube.ts';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -42,7 +34,7 @@ function say(text: string): void {
 }
 
 function currentState(): State {
-  return { ids: [...tiles.keys()], focus: focusId };
+  return { keys: [...tiles.keys()], focus: focusId };
 }
 
 function syncUrl(): void {
@@ -69,7 +61,8 @@ function renderLabel(t: Tile): void {
   t.label.title = text;
 }
 
-function createTile(id: string): Tile {
+function createTile(key: string): Tile {
+  const id = nameOf(key);
   const el = document.createElement('div');
   el.className = 'tile';
 
@@ -95,7 +88,7 @@ function createTile(id: string): Tile {
   bar.append(label, focusBtn, removeBtn);
   el.append(frame, bar);
 
-  const tile: Tile = { id, el, iframe, label, name: id, focusBtn };
+  const tile: Tile = { id: key, el, iframe, label, name: id, focusBtn };
   fetchTitle(id).then((title) => {
     if (!title) return;
     tile.name = title;
@@ -106,8 +99,8 @@ function createTile(id: string): Tile {
   iframe.addEventListener('load', () => listen(iframe));
   iframe.src = playerUrl(id, location.origin);
 
-  focusBtn.addEventListener('click', () => setFocus(id));
-  removeBtn.addEventListener('click', () => removeTile(id));
+  focusBtn.addEventListener('click', () => setFocus(key));
+  removeBtn.addEventListener('click', () => removeTile(key));
   return tile;
 }
 
@@ -138,8 +131,8 @@ function setFocus(id: string | null): void {
   }
   // Only one chat iframe is alive; swap its src when focus moves.
   if (id) {
-    chat.src = chatUrl(id, location.hostname);
-    chatTitle.textContent = `Chat: ${id}`;
+    chat.src = chatUrl(nameOf(id), location.hostname);
+    chatTitle.textContent = `Chat: ${nameOf(id)}`;
   } else {
     chat.removeAttribute('src');
     chatTitle.textContent = 'Pick a tile and click "Focus" to open its chat.';
@@ -147,16 +140,16 @@ function setFocus(id: string | null): void {
   syncUrl();
 }
 
-function addTiles(ids: string[]): void {
+function addTiles(keys: string[]): void {
   let skippedFull = 0;
-  for (const id of ids) {
-    if (tiles.has(id)) continue;
+  for (const key of keys) {
+    if (tiles.has(key)) continue;
     if (tiles.size >= MAX_TILES) {
       skippedFull++;
       continue;
     }
-    const t = createTile(id);
-    tiles.set(id, t);
+    const t = createTile(key);
+    tiles.set(key, t);
     grid.append(t.el);
   }
   layout();
@@ -188,19 +181,19 @@ function loadFromHash(): void {
   clearAll();
   // Set first so addTiles does not auto-focus the first tile (the chat would load twice).
   focusId = s.focus;
-  addTiles(s.ids);
+  addTiles(s.keys);
   if (s.focus) setFocus(s.focus);
 }
 
 form.addEventListener('submit', (e) => {
   e.preventDefault();
   say('');
-  const { ids, invalid } = parseMany(input.value);
-  if (!ids.length) {
+  const { keys, invalid } = parseMany(input.value);
+  if (!keys.length) {
     say(invalid.length ? `Not recognised: ${invalid.join(', ')}` : 'Enter a YouTube URL or video ID.');
     return;
   }
-  addTiles(ids);
+  addTiles(keys);
   if (invalid.length) say(`Not recognised: ${invalid.join(', ')}`);
   input.value = '';
   input.focus();
