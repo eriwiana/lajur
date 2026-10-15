@@ -1,7 +1,7 @@
 import './style.css';
-import { nameOf, parseMany } from './sources.ts';
+import { chatUrl, kindOf, nameOf, parseMany, playerUrl } from './sources.ts';
 import { decodeState, encodeState, MAX_TILES, type State } from './state.ts';
-import { chatUrl, errorMessage, fetchTitle, listen, onPlayerEvents, playerUrl, setAudio } from './youtube.ts';
+import { errorMessage, fetchTitle, listen, onPlayerEvents, setAudio } from './youtube.ts';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -15,6 +15,7 @@ const grid = $('grid');
 const empty = $('empty');
 const chat = $<HTMLIFrameElement>('chat');
 const chatTitle = $('chat-title');
+const chatLink = $<HTMLAnchorElement>('chat-link');
 
 interface Tile {
   key: string;
@@ -23,6 +24,7 @@ interface Tile {
   label: HTMLElement;
   name: string;
   error?: string;
+  audible: boolean;
   focusBtn: HTMLButtonElement;
 }
 
@@ -52,7 +54,16 @@ function layout(): void {
 }
 
 function applyAudio(t: Tile): void {
-  setAudio(t.iframe, t.key === focusId);
+  const on = t.key === focusId;
+  if (kindOf(t.key) === 'yt') {
+    setAudio(t.iframe, on);
+    return;
+  }
+  // ponytail: Twitch and Kick have no audio API, so a change reloads the player with the new
+  // muted flag. Add the Twitch embed SDK if the reload flash matters.
+  if (t.audible === on) return;
+  t.audible = on;
+  t.iframe.src = playerUrl(t.key, location.origin, location.hostname, on);
 }
 
 function renderLabel(t: Tile): void {
@@ -88,16 +99,18 @@ function createTile(key: string): Tile {
   bar.append(label, focusBtn, removeBtn);
   el.append(frame, bar);
 
-  const tile: Tile = { key, el, iframe, label, name: id, focusBtn };
-  fetchTitle(id).then((title) => {
-    if (!title) return;
-    tile.name = title;
-    renderLabel(tile);
-  });
-  // A new player starts muted (mute=1). The iframe `load` event is too early for audio commands:
-  // register with the player and apply audio when it reports ready (see onPlayerEvents below).
-  iframe.addEventListener('load', () => listen(iframe));
-  iframe.src = playerUrl(id, location.origin);
+  const tile: Tile = { key, el, iframe, label, name: id, focusBtn, audible: key === focusId };
+  if (kindOf(key) === 'yt') {
+    fetchTitle(id).then((title) => {
+      if (!title) return;
+      tile.name = title;
+      renderLabel(tile);
+    });
+    // A new player starts muted (mute=1). The iframe `load` event is too early for audio commands:
+    // register with the player and apply audio when it reports ready (see onPlayerEvents below).
+    iframe.addEventListener('load', () => listen(iframe));
+  }
+  iframe.src = playerUrl(key, location.origin, location.hostname, tile.audible);
 
   focusBtn.addEventListener('click', () => setFocus(key));
   removeBtn.addEventListener('click', () => removeTile(key));
@@ -131,10 +144,14 @@ function setFocus(id: string | null): void {
   }
   // Only one chat iframe is alive; swap its src when focus moves.
   if (id) {
-    chat.src = chatUrl(nameOf(id), location.hostname);
+    chat.src = chatUrl(id, location.hostname);
     chatTitle.textContent = `Chat: ${nameOf(id)}`;
+    // Kick has no documented chat embed; its popout may refuse framing, so always offer a link.
+    chatLink.hidden = kindOf(id) !== 'kick';
+    chatLink.href = chat.src;
   } else {
     chat.removeAttribute('src');
+    chatLink.hidden = true;
     chatTitle.textContent = 'Pick a tile and click "Focus" to open its chat.';
   }
   syncUrl();
@@ -153,7 +170,7 @@ function addTiles(keys: string[]): void {
     grid.append(t.el);
   }
   layout();
-  if (skippedFull) say(`At most ${MAX_TILES} tiles. ${skippedFull} video(s) not added.`);
+  if (skippedFull) say(`At most ${MAX_TILES} tiles. ${skippedFull} stream(s) not added.`);
   // Focus the first tile automatically when none is active.
   if (!focusId && tiles.size) setFocus(tiles.keys().next().value ?? null);
   else syncUrl();
@@ -190,7 +207,7 @@ form.addEventListener('submit', (e) => {
   say('');
   const { keys, invalid } = parseMany(input.value);
   if (!keys.length) {
-    say(invalid.length ? `Not recognised: ${invalid.join(', ')}` : 'Enter a YouTube URL or video ID.');
+    say(invalid.length ? `Not recognised: ${invalid.join(', ')}` : 'Enter a YouTube, Twitch or Kick URL.');
     return;
   }
   addTiles(keys);

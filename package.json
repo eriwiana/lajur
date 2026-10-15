@@ -2,7 +2,7 @@
   "name": "lajur",
   "private": true,
   "version": "0.2.1",
-  "description": "Watch several YouTube live streams at once, with chat that follows your focus.",
+  "description": "Watch several YouTube, Twitch and Kick live streams at once, with chat that follows your focus.",
   "license": "MIT",
   "type": "module",
   "scripts": {
