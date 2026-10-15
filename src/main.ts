@@ -159,6 +159,9 @@ function setFocus(id: string | null): void {
 
 function addTiles(keys: string[]): void {
   let skippedFull = 0;
+  // Focus the first tile up front so a Twitch/Kick player is created with sound, not reloaded.
+  const autoFocus = !focusId && keys.length ? keys[0] : null;
+  if (autoFocus) focusId = autoFocus;
   for (const key of keys) {
     if (tiles.has(key)) continue;
     if (tiles.size >= MAX_TILES) {
@@ -171,8 +174,7 @@ function addTiles(keys: string[]): void {
   }
   layout();
   if (skippedFull) say(`At most ${MAX_TILES} tiles. ${skippedFull} stream(s) not added.`);
-  // Focus the first tile automatically when none is active.
-  if (!focusId && tiles.size) setFocus(tiles.keys().next().value ?? null);
+  if (autoFocus) setFocus(autoFocus);
   else syncUrl();
 }
 
